@@ -1,5 +1,5 @@
 import ScrollReveal from "./ScrollReveal";
-import { Mail, Linkedin, Github, MapPin } from "lucide-react";
+import { Mail, Linkedin, Github, MapPin, Heart } from "lucide-react";
 
 const Contact = () => {
   return (
@@ -19,7 +19,7 @@ const Contact = () => {
           <ScrollReveal delay={100}>
             <a
               href="mailto:sarkardebleena18@gmail.com"
-              className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 group"
+              className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 group hover:scale-105 hover:-translate-y-1"
             >
               <Mail className="text-primary group-hover:scale-110 transition-transform" size={28} />
               <p className="font-body text-sm text-muted-foreground">sarkardebleena18@gmail.com</p>
@@ -31,7 +31,7 @@ const Contact = () => {
               href="https://www.linkedin.com/in/debleena-sarkar/"
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 group"
+              className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 group hover:scale-105 hover:-translate-y-1"
             >
               <Linkedin className="text-primary group-hover:scale-110 transition-transform" size={28} />
               <p className="font-body text-sm text-muted-foreground">LinkedIn</p>
@@ -43,7 +43,7 @@ const Contact = () => {
               href="https://github.com/Debleena18"
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 group"
+              className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 group hover:scale-105 hover:-translate-y-1"
             >
               <Github className="text-primary group-hover:scale-110 transition-transform" size={28} />
               <p className="font-body text-sm text-muted-foreground">GitHub</p>
@@ -51,7 +51,7 @@ const Contact = () => {
           </ScrollReveal>
 
           <ScrollReveal delay={400}>
-            <div className="glass-card p-6 flex flex-col items-center text-center gap-3">
+            <div className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1">
               <MapPin className="text-primary" size={28} />
               <p className="font-body text-sm text-muted-foreground">Kolkata, India</p>
             </div>
@@ -60,8 +60,8 @@ const Contact = () => {
 
         {/* Footer */}
         <div className="mt-24 pt-8 border-t border-border/30 text-center">
-          <p className="font-body text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Debleena Sarkar. Built with React + TypeScript.
+          <p className="font-body text-xs text-muted-foreground flex items-center justify-center gap-1">
+            © {new Date().getFullYear()} Debleena Sarkar. Built with <Heart size={12} className="text-primary inline animate-pulse" /> React + TypeScript.
           </p>
         </div>
       </div>

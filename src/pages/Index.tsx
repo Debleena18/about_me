@@ -5,10 +5,12 @@ import Skills from "@/components/Skills";
 import Experience from "@/components/Experience";
 import Achievements from "@/components/Achievements";
 import Contact from "@/components/Contact";
+import CursorGlitter from "@/components/CursorGlitter";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <CursorGlitter />
       <Navbar />
       <Hero />
       <About />

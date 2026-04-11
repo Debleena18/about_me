@@ -1,4 +1,5 @@
 import profilePhoto from "@/assets/profile-photo.png";
+import { Github, Linkedin, Mail } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -11,12 +12,15 @@ const Hero = () => {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-accent/5 rounded-full blur-3xl animate-float stagger-3" />
         <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-primary/3 rounded-full blur-2xl animate-float stagger-5" />
+        <div className="absolute top-10 right-10 w-2 h-2 bg-primary rounded-full animate-ping" />
+        <div className="absolute bottom-32 left-20 w-1.5 h-1.5 bg-accent rounded-full animate-ping stagger-2" />
+        <div className="absolute top-1/3 right-20 w-1 h-1 bg-primary rounded-full animate-ping stagger-4" />
       </div>
 
       <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
         {/* Text side */}
         <div className="animate-slide-up">
-          <p className="font-body text-primary text-sm uppercase tracking-[0.3em] mb-4">
+          <p className="font-body text-primary text-sm uppercase tracking-[0.3em] mb-4 animate-pulse-glow inline-block px-4 py-1 rounded-full border border-primary/20">
             Hello, I'm
           </p>
           <h1 className="font-heading text-5xl md:text-7xl leading-tight mb-4">
@@ -31,14 +35,14 @@ const Hero = () => {
             5.5+ years architecting high-scale enterprise React applications.
             Turning complex business requirements into elegant, performant interfaces.
           </p>
-          <div className="flex gap-4 flex-wrap">
+          <div className="flex gap-4 flex-wrap mb-8">
             <a
               href="#contact"
               onClick={(e) => {
                 e.preventDefault();
                 document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-body font-semibold hover:glow-mint transition-all duration-300 hover:scale-105"
+              className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-body font-semibold hover:glow-mint transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
             >
               Get In Touch
             </a>
@@ -48,9 +52,22 @@ const Hero = () => {
                 e.preventDefault();
                 document.querySelector("#experience")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="px-8 py-3 rounded-full border border-primary text-primary font-body font-semibold hover:bg-primary/10 transition-all duration-300"
+              className="px-8 py-3 rounded-full border border-primary text-primary font-body font-semibold hover:bg-primary/10 transition-all duration-300 hover:scale-105"
             >
               My Journey
+            </a>
+          </div>
+
+          {/* Social links */}
+          <div className="flex gap-4">
+            <a href="https://github.com/Debleena18" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300">
+              <Github size={20} className="text-muted-foreground hover:text-primary transition-colors" />
+            </a>
+            <a href="https://www.linkedin.com/in/debleena-sarkar/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300">
+              <Linkedin size={20} className="text-muted-foreground hover:text-primary transition-colors" />
+            </a>
+            <a href="mailto:sarkardebleena18@gmail.com" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300">
+              <Mail size={20} className="text-muted-foreground hover:text-primary transition-colors" />
             </a>
           </div>
         </div>
@@ -71,6 +88,12 @@ const Hero = () => {
             </div>
             <div className="absolute -bottom-2 -left-4 glass-card px-4 py-2 rounded-full animate-float stagger-3">
               <span className="text-accent font-body font-bold text-sm">React Expert</span>
+            </div>
+            <div className="absolute top-1/2 -right-8 glass-card px-4 py-2 rounded-full animate-float stagger-2">
+              <span className="text-primary font-body font-bold text-sm">Web Developer</span>
+            </div>
+            <div className="absolute -bottom-8 left-1/4 glass-card px-4 py-2 rounded-full animate-float stagger-4">
+              <span className="text-accent font-body font-bold text-sm">JavaScript</span>
             </div>
           </div>
         </div>

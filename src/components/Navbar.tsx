@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
   { label: "About", href: "#about" },
@@ -12,9 +13,20 @@ const navItems = [
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 50);
+      const sections = navItems.map((i) => document.querySelector(i.href));
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = sections[i];
+        if (el && el.getBoundingClientRect().top <= 120) {
+          setActiveSection(navItems[i].href);
+          break;
+        }
+      }
+    };
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -33,7 +45,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between px-6">
         <button
           onClick={() => handleClick("#hero")}
-          className="font-heading text-xl text-primary tracking-wider"
+          className="font-heading text-xl text-primary tracking-wider hover:scale-110 transition-transform duration-300"
         >
           DS.
         </button>
@@ -44,28 +56,35 @@ const Navbar = () => {
             <button
               key={item.href}
               onClick={() => handleClick(item.href)}
-              className="font-body text-sm text-muted-foreground hover:text-primary transition-colors duration-300 tracking-wide uppercase"
+              className={`font-body text-sm transition-colors duration-300 tracking-wide uppercase relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
+                activeSection === item.href
+                  ? "text-primary after:w-full"
+                  : "text-muted-foreground hover:text-primary after:w-0 hover:after:w-full"
+              }`}
             >
               {item.label}
             </button>
           ))}
           <a
             href="/Debleena_Sarkar_Resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2 rounded-full border border-primary text-primary font-body text-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+            download="Debleena_Sarkar_Resume.pdf"
+            className="px-5 py-2 rounded-full border border-primary text-primary font-body text-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105"
           >
             Resume
           </a>
+          <ThemeToggle />
         </div>
 
         {/* Mobile toggle */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-foreground"
-        >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="md:hidden flex items-center gap-3">
+          <ThemeToggle />
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="text-foreground"
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -75,15 +94,16 @@ const Navbar = () => {
             <button
               key={item.href}
               onClick={() => handleClick(item.href)}
-              className="block w-full text-left py-3 text-muted-foreground hover:text-primary transition-colors font-body uppercase text-sm tracking-wide"
+              className={`block w-full text-left py-3 transition-colors font-body uppercase text-sm tracking-wide ${
+                activeSection === item.href ? "text-primary" : "text-muted-foreground hover:text-primary"
+              }`}
             >
               {item.label}
             </button>
           ))}
           <a
             href="/Debleena_Sarkar_Resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
+            download="Debleena_Sarkar_Resume.pdf"
             className="mt-4 block text-center px-5 py-2 rounded-full border border-primary text-primary font-body text-sm"
           >
             Resume

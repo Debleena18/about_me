@@ -49,6 +49,39 @@
     --shadow-mint: 0 0 30px hsl(160 72% 50% / 0.15);
     --shadow-glow: 0 0 60px hsl(160 72% 50% / 0.25);
   }
+
+  .light {
+    --background: 150 20% 97%;
+    --foreground: 213 60% 10%;
+
+    --card: 150 15% 95%;
+    --card-foreground: 213 60% 10%;
+
+    --popover: 150 15% 95%;
+    --popover-foreground: 213 60% 10%;
+
+    --primary: 160 72% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 153 20% 90%;
+    --secondary-foreground: 160 40% 25%;
+
+    --muted: 150 10% 90%;
+    --muted-foreground: 213 20% 40%;
+
+    --accent: 160 60% 35%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 15% 82%;
+    --input: 150 15% 82%;
+    --ring: 160 72% 40%;
+
+    --shadow-mint: 0 4px 20px hsl(160 72% 40% / 0.1);
+    --shadow-glow: 0 8px 40px hsl(160 72% 40% / 0.15);
+  }
 }
 
 @layer base {
@@ -58,6 +91,7 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -73,7 +107,7 @@
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: hsl(213 60% 7%);
+    background: hsl(var(--background));
   }
   ::-webkit-scrollbar-thumb {
     background: hsl(160 72% 50% / 0.3);
@@ -94,6 +128,11 @@
   .glass-card {
     @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-xl;
     box-shadow: var(--shadow-mint);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .glass-card:hover {
+    box-shadow: var(--shadow-glow);
   }
 
   .glow-mint {
@@ -114,6 +153,11 @@
 
   .animate-pulse-glow {
     animation: pulseGlow 3s ease-in-out infinite;
+  }
+
+  .animate-gradient {
+    animation: gradientShift 8s ease infinite;
+    background-size: 200% 200%;
   }
 
   .stagger-1 { animation-delay: 0.1s; }
@@ -150,4 +194,10 @@
 
 @keyframes blink {
   50% { border-color: transparent; }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
