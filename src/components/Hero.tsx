@@ -1,0 +1,88 @@
+import profilePhoto from "@/assets/profile-photo.png";
+
+const Hero = () => {
+  return (
+    <section
+      id="hero"
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+    >
+      {/* Animated background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-accent/5 rounded-full blur-3xl animate-float stagger-3" />
+        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-primary/3 rounded-full blur-2xl animate-float stagger-5" />
+      </div>
+
+      <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
+        {/* Text side */}
+        <div className="animate-slide-up">
+          <p className="font-body text-primary text-sm uppercase tracking-[0.3em] mb-4">
+            Hello, I'm
+          </p>
+          <h1 className="font-heading text-5xl md:text-7xl leading-tight mb-4">
+            Debleena
+            <br />
+            <span className="text-gradient-mint">Sarkar</span>
+          </h1>
+          <p className="font-body text-xl md:text-2xl text-muted-foreground mb-2">
+            Senior Frontend Engineer
+          </p>
+          <p className="font-body text-muted-foreground max-w-md mb-8 leading-relaxed">
+            5.5+ years architecting high-scale enterprise React applications.
+            Turning complex business requirements into elegant, performant interfaces.
+          </p>
+          <div className="flex gap-4 flex-wrap">
+            <a
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-body font-semibold hover:glow-mint transition-all duration-300 hover:scale-105"
+            >
+              Get In Touch
+            </a>
+            <a
+              href="#experience"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#experience")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="px-8 py-3 rounded-full border border-primary text-primary font-body font-semibold hover:bg-primary/10 transition-all duration-300"
+            >
+              My Journey
+            </a>
+          </div>
+        </div>
+
+        {/* Photo side */}
+        <div className="flex justify-center animate-slide-up stagger-2">
+          <div className="relative">
+            <div className="w-72 h-72 md:w-80 md:h-80 rounded-full overflow-hidden border-2 border-primary/30 animate-pulse-glow">
+              <img
+                src={profilePhoto}
+                alt="Debleena Sarkar"
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
+            {/* Floating badges */}
+            <div className="absolute -top-4 -right-4 glass-card px-4 py-2 rounded-full animate-float">
+              <span className="text-primary font-body font-bold text-sm">5.5+ yrs</span>
+            </div>
+            <div className="absolute -bottom-2 -left-4 glass-card px-4 py-2 rounded-full animate-float stagger-3">
+              <span className="text-accent font-body font-bold text-sm">React Expert</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+        <span className="font-body text-xs text-muted-foreground uppercase tracking-widest">Scroll</span>
+        <div className="w-px h-8 bg-gradient-to-b from-primary to-transparent" />
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
