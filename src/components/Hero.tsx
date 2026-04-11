@@ -1,5 +1,5 @@
 import profilePhoto from "@/assets/profile-photo.png";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin, Mail, Sparkles } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -7,21 +7,28 @@ const Hero = () => {
       id="hero"
       className="min-h-screen flex items-center justify-center relative overflow-hidden"
     >
-      {/* Animated background orbs */}
+      {/* Animated background orbs - fairy dust clouds */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-accent/5 rounded-full blur-3xl animate-float stagger-3" />
         <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-primary/3 rounded-full blur-2xl animate-float stagger-5" />
-        <div className="absolute top-10 right-10 w-2 h-2 bg-primary rounded-full animate-ping" />
-        <div className="absolute bottom-32 left-20 w-1.5 h-1.5 bg-accent rounded-full animate-ping stagger-2" />
-        <div className="absolute top-1/3 right-20 w-1 h-1 bg-primary rounded-full animate-ping stagger-4" />
+        {/* Fairy sparkle dots */}
+        <div className="absolute top-10 right-10 w-2 h-2 bg-primary rounded-full animate-fairy-twinkle" />
+        <div className="absolute bottom-32 left-20 w-1.5 h-1.5 bg-accent rounded-full animate-fairy-twinkle stagger-2" />
+        <div className="absolute top-1/3 right-20 w-1 h-1 bg-primary rounded-full animate-fairy-twinkle stagger-4" />
+        <div className="absolute top-20 left-1/3 w-1.5 h-1.5 bg-accent rounded-full animate-fairy-twinkle stagger-1" />
+        <div className="absolute bottom-1/4 left-1/2 w-2 h-2 bg-primary rounded-full animate-fairy-twinkle stagger-3" />
+        <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-accent rounded-full animate-fairy-twinkle stagger-5" />
+        <div className="absolute bottom-20 right-1/3 w-1.5 h-1.5 bg-primary rounded-full animate-fairy-twinkle stagger-2" />
       </div>
 
       <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
         {/* Text side */}
         <div className="animate-slide-up">
-          <p className="font-body text-primary text-sm uppercase tracking-[0.3em] mb-4 animate-pulse-glow inline-block px-4 py-1 rounded-full border border-primary/20">
+          <p className="font-body text-primary text-sm uppercase tracking-[0.3em] mb-4 animate-pulse-glow inline-flex items-center gap-2 px-4 py-1 rounded-full border border-primary/20">
+            <Sparkles size={14} className="animate-fairy-twinkle" />
             Hello, I'm
+            <Sparkles size={14} className="animate-fairy-twinkle stagger-2" />
           </p>
           <h1 className="font-heading text-5xl md:text-7xl leading-tight mb-4">
             Debleena
@@ -42,9 +49,10 @@ const Hero = () => {
                 e.preventDefault();
                 document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-body font-semibold hover:glow-mint transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
+              className="group px-8 py-3 rounded-full bg-primary text-primary-foreground font-body font-semibold hover:glow-mint transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 relative overflow-hidden"
             >
-              Get In Touch
+              <span className="relative z-10">Get In Touch</span>
+              <div className="absolute inset-0 bg-accent/20 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
             </a>
             <a
               href="#experience"
@@ -60,14 +68,14 @@ const Hero = () => {
 
           {/* Social links */}
           <div className="flex gap-4">
-            <a href="https://github.com/Debleena18" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300">
-              <Github size={20} className="text-muted-foreground hover:text-primary transition-colors" />
+            <a href="https://github.com/Debleena18" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
+              <Github size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
-            <a href="https://www.linkedin.com/in/debleena-sarkar/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300">
-              <Linkedin size={20} className="text-muted-foreground hover:text-primary transition-colors" />
+            <a href="https://www.linkedin.com/in/debleena-sarkar/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
+              <Linkedin size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
-            <a href="mailto:sarkardebleena18@gmail.com" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300">
-              <Mail size={20} className="text-muted-foreground hover:text-primary transition-colors" />
+            <a href="mailto:sarkardebleena18@gmail.com" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
+              <Mail size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
           </div>
         </div>
@@ -75,25 +83,37 @@ const Hero = () => {
         {/* Photo side */}
         <div className="flex justify-center animate-slide-up stagger-2">
           <div className="relative">
-            <div className="w-72 h-72 md:w-80 md:h-80 rounded-full overflow-hidden border-2 border-primary/30 animate-pulse-glow">
+            {/* Fairy ring glow behind the photo */}
+            <div className="absolute inset-0 rounded-full bg-primary/10 blur-2xl scale-110 animate-pulse-glow" />
+            
+            <div className="relative w-72 h-72 md:w-80 md:h-80 rounded-full overflow-hidden border-2 border-primary/30 photo-glow-card group cursor-pointer">
               <img
                 src={profilePhoto}
                 alt="Debleena Sarkar"
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
               />
+              {/* Overlay shimmer on hover */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 via-accent/10 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
-            {/* Floating badges */}
-            <div className="absolute -top-4 -right-4 glass-card px-4 py-2 rounded-full animate-float">
+
+            {/* Floating badges - spread around the circle */}
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 glass-card px-4 py-2 rounded-full animate-float">
               <span className="text-primary font-body font-bold text-sm">5.5+ yrs</span>
             </div>
-            <div className="absolute -bottom-2 -left-4 glass-card px-4 py-2 rounded-full animate-float stagger-3">
+            <div className="absolute top-8 -right-12 glass-card px-4 py-2 rounded-full animate-float stagger-2">
               <span className="text-accent font-body font-bold text-sm">React Expert</span>
             </div>
-            <div className="absolute top-1/2 -right-8 glass-card px-4 py-2 rounded-full animate-float stagger-2">
-              <span className="text-primary font-body font-bold text-sm">Web Developer</span>
+            <div className="absolute bottom-8 -right-14 glass-card px-4 py-2 rounded-full animate-float stagger-4">
+              <span className="text-primary font-body font-bold text-sm">JavaScript</span>
             </div>
-            <div className="absolute -bottom-8 left-1/4 glass-card px-4 py-2 rounded-full animate-float stagger-4">
-              <span className="text-accent font-body font-bold text-sm">JavaScript</span>
+            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 glass-card px-4 py-2 rounded-full animate-float stagger-3">
+              <span className="text-accent font-body font-bold text-sm">Web Developer</span>
+            </div>
+            <div className="absolute bottom-8 -left-12 glass-card px-4 py-2 rounded-full animate-float stagger-5">
+              <span className="text-primary font-body font-bold text-sm">TypeScript</span>
+            </div>
+            <div className="absolute top-8 -left-10 glass-card px-4 py-2 rounded-full animate-float stagger-1">
+              <span className="text-accent font-body font-bold text-sm">Frontend</span>
             </div>
           </div>
         </div>
@@ -101,6 +121,7 @@ const Hero = () => {
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+        <Sparkles size={14} className="text-primary animate-fairy-twinkle" />
         <span className="font-body text-xs text-muted-foreground uppercase tracking-widest">Scroll</span>
         <div className="w-px h-8 bg-gradient-to-b from-primary to-transparent" />
       </div>
