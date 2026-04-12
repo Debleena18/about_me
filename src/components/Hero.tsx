@@ -25,20 +25,20 @@ const Hero = () => {
       <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
         {/* Text side */}
         <div className="animate-slide-up">
-          <p className="font-body text-primary text-sm uppercase tracking-[0.3em] mb-4 animate-pulse-glow inline-flex items-center gap-2 px-4 py-1 rounded-full border border-primary/20">
+          <p className="font-body text-primary text-sm uppercase tracking-[0.3em] mb-4 animate-pulse-glow hidden md:inline-flex items-center gap-2 px-4 py-1 rounded-full border border-primary/20">
             <Sparkles size={14} className="animate-fairy-twinkle" />
             Hello, I'm
             <Sparkles size={14} className="animate-fairy-twinkle stagger-2" />
           </p>
-          <h1 className="font-heading text-5xl md:text-7xl leading-tight mb-4">
+          <h1 className="font-heading text-5xl md:text-7xl leading-tight mb-4 mt-10 md:mt-0">
             Debleena
             <br />
             <span className="text-gradient-mint">Sarkar</span>
           </h1>
-          <p className="font-body text-xl md:text-2xl text-muted-foreground mb-2">
+          <p className="font-body text-xl md:text-2xl text-white mb-2">
             Senior Frontend Engineer
           </p>
-          <p className="font-body text-muted-foreground max-w-md mb-8 leading-relaxed">
+          <p className="font-body text-white max-w-md mb-8 leading-relaxed">
             5.5+ years architecting high-scale enterprise React applications.
             Turning complex business requirements into elegant, performant interfaces.
           </p>
