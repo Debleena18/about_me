@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "vite_react_shadcn_ts",
+      "name": "about_me",
       "dependencies": {
         "@fontsource/abril-fatface": "^5.2.7",
         "@fontsource/cabin": "^5.2.8",
