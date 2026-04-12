@@ -72,7 +72,7 @@ const Navbar = () => {
           >
             Resume
           </a>
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
         </div>
 
         {/* Mobile toggle */}
