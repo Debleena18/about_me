@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+      // Get the path that was attempted
+      var pathSegments = window.location.pathname.split('/').filter(Boolean);
+      
+      // Redirect to index.html with the path as query parameter
+      var redirectTo = '/about_me/index.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.replace(redirectTo);
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
