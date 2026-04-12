@@ -6,10 +6,12 @@ import Experience from "@/components/Experience";
 import Achievements from "@/components/Achievements";
 import Contact from "@/components/Contact";
 import CursorGlitter from "@/components/CursorGlitter";
+import GalaxyBackground from "@/components/GalaxyBackground";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <GalaxyBackground />
       <CursorGlitter />
       <Navbar />
       <Hero />
