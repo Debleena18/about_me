@@ -131,11 +131,13 @@ function StarField() {
 
   useFrame((state, delta) => {
     if (!ref.current) return;
-    ref.current.rotation.y += delta * 0.02;
-    ref.current.rotation.x += delta * 0.005;
+    
+    // Smooth rotation
+    const frameDelta = Math.min(delta, 0.016); // Cap at 60fps equivalent
+    ref.current.rotation.y += frameDelta * 0.02;
+    ref.current.rotation.x += frameDelta * 0.005;
 
     const strength = mouseState.idleStrength;
-    // Unproject mouse NDC to world space, then transform into the rotated points' local space
     const worldTarget = new THREE.Vector3(mouseState.ndcX, mouseState.ndcY, 0.5).unproject(state.camera);
     const localTarget = ref.current.worldToLocal(worldTarget.clone());
     blackholePos.copy(localTarget);
@@ -143,8 +145,10 @@ function StarField() {
     const geo = ref.current.geometry;
     const posAttr = geo.attributes.position;
     const arr = posAttr.array as Float32Array;
-    // Faster restore speed when auto-reverting or cursor moved
-    const restoreSpeed = mouseState.autoRevert ? 2.5 : 3.0;
+    
+    // Smoother restore with easing
+    const restoreSpeed = mouseState.autoRevert ? 2.0 : 2.5;
+    const smoothDelta = Math.min(frameDelta * restoreSpeed, 1);
 
     for (let i = 0; i < count; i++) {
       const ix = i * 3;
@@ -155,25 +159,24 @@ function StarField() {
         tempVec.set(arr[ix], arr[iy], arr[iz]);
         const dir = blackholePos.clone().sub(tempVec);
         const dist = dir.length();
-        if (dist > 0.05) {
-          const pullForce = strength * delta * 2.5 / (dist * 0.5 + 0.3);
+        
+        if (dist > 0.02) {
+          const pullForce = (strength * frameDelta * 2.5) / (dist * 0.5 + 0.2);
           dir.normalize().multiplyScalar(pullForce);
           arr[ix] += dir.x;
           arr[iy] += dir.y;
           arr[iz] += dir.z;
         } else {
-          const angle = delta * 8;
-          const cx = arr[ix] - blackholePos.x;
-          const cy = arr[iy] - blackholePos.y;
-          arr[ix] = blackholePos.x + cx * Math.cos(angle) - cy * Math.sin(angle);
-          arr[iy] = blackholePos.y + cx * Math.sin(angle) + cy * Math.cos(angle);
-          arr[ix] += (blackholePos.x - arr[ix]) * delta * 2;
-          arr[iy] += (blackholePos.y - arr[iy]) * delta * 2;
+          // Pull particles directly to singularity
+          arr[ix] = blackholePos.x;
+          arr[iy] = blackholePos.y;
+          arr[iz] = blackholePos.z;
         }
       } else {
-        arr[ix] += (originals[ix] - arr[ix]) * delta * restoreSpeed;
-        arr[iy] += (originals[iy] - arr[iy]) * delta * restoreSpeed;
-        arr[iz] += (originals[iz] - arr[iz]) * delta * restoreSpeed;
+        // Smooth restore using interpolation
+        arr[ix] += (originals[ix] - arr[ix]) * smoothDelta;
+        arr[iy] += (originals[iy] - arr[iy]) * smoothDelta;
+        arr[iz] += (originals[iz] - arr[iz]) * smoothDelta;
       }
     }
     posAttr.needsUpdate = true;
@@ -223,7 +226,10 @@ function Nebula() {
 
   useFrame((state, delta) => {
     if (!ref.current) return;
-    ref.current.rotation.y += delta * 0.03;
+    
+    // Smooth rotation
+    const frameDelta = Math.min(delta, 0.016); // Cap at 60fps equivalent
+    ref.current.rotation.y += frameDelta * 0.03;
 
     const strength = mouseState.idleStrength;
     const worldTarget = new THREE.Vector3(mouseState.ndcX, mouseState.ndcY, 0.5).unproject(state.camera);
@@ -233,7 +239,10 @@ function Nebula() {
     const geo = ref.current.geometry;
     const posAttr = geo.attributes.position;
     const arr = posAttr.array as Float32Array;
-    const restoreSpeed = mouseState.autoRevert ? 2.5 : 3.0;
+    
+    // Smoother restore with easing
+    const restoreSpeed = mouseState.autoRevert ? 2.0 : 2.5;
+    const smoothDelta = Math.min(frameDelta * restoreSpeed, 1);
 
     for (let i = 0; i < count; i++) {
       const ix = i * 3;
@@ -244,25 +253,24 @@ function Nebula() {
         tempVec.set(arr[ix], arr[iy], arr[iz]);
         const dir = blackholePos.clone().sub(tempVec);
         const dist = dir.length();
-        if (dist > 0.05) {
-          const pullForce = strength * delta * 3.0 / (dist * 0.4 + 0.2);
+        
+        if (dist > 0.02) {
+          const pullForce = (strength * frameDelta * 3.0) / (dist * 0.4 + 0.2);
           dir.normalize().multiplyScalar(pullForce);
           arr[ix] += dir.x;
           arr[iy] += dir.y;
           arr[iz] += dir.z;
         } else {
-          const angle = delta * 10;
-          const cx = arr[ix] - blackholePos.x;
-          const cy = arr[iy] - blackholePos.y;
-          arr[ix] = blackholePos.x + cx * Math.cos(angle) - cy * Math.sin(angle);
-          arr[iy] = blackholePos.y + cx * Math.sin(angle) + cy * Math.cos(angle);
-          arr[ix] += (blackholePos.x - arr[ix]) * delta * 3;
-          arr[iy] += (blackholePos.y - arr[iy]) * delta * 3;
+          // Pull particles directly to singularity
+          arr[ix] = blackholePos.x;
+          arr[iy] = blackholePos.y;
+          arr[iz] = blackholePos.z;
         }
       } else {
-        arr[ix] += (originals[ix] - arr[ix]) * delta * restoreSpeed;
-        arr[iy] += (originals[iy] - arr[iy]) * delta * restoreSpeed;
-        arr[iz] += (originals[iz] - arr[iz]) * delta * restoreSpeed;
+        // Smooth restore using interpolation
+        arr[ix] += (originals[ix] - arr[ix]) * smoothDelta;
+        arr[iy] += (originals[iy] - arr[iy]) * smoothDelta;
+        arr[iz] += (originals[iz] - arr[iz]) * smoothDelta;
       }
     }
     posAttr.needsUpdate = true;
