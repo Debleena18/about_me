@@ -17,8 +17,8 @@ const mouseState = {
 };
 
 const IDLE_THRESHOLD = 800; // ms before pull starts
-const MAX_PULL_DURATION = 4; // seconds of full pull before auto-revert
-const REVERT_COOLDOWN = 3; // seconds to stay reverted before allowing pull again
+const MAX_PULL_DURATION = 1; // seconds of full pull before auto-revert
+const REVERT_COOLDOWN = 2; // seconds to stay reverted before allowing pull again
 let revertCooldownTimer = 0;
 
 function MouseTracker() {
@@ -290,6 +290,7 @@ const GalaxyBackground = () => {
         <MouseTracker />
         <StarField />
         <Nebula />
+        <VortexGlow />
       </Canvas>
     </div>
   );
