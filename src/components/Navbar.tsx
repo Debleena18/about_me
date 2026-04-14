@@ -66,7 +66,7 @@ const Navbar = () => {
             </button>
           ))}
           <a
-            href="/Debleena_Sarkar_Resume.pdf"
+            href={`${import.meta.env.BASE_URL}Debleena_Sarkar_Resume.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2 rounded-full border border-primary text-primary font-body text-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105"
@@ -103,7 +103,7 @@ const Navbar = () => {
             </button>
           ))}
           <a
-            href="/Debleena_Sarkar_Resume.pdf"
+            href={`${import.meta.env.BASE_URL}Debleena_Sarkar_Resume.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 block text-center px-5 py-2 rounded-full border border-primary text-primary font-body text-sm"
