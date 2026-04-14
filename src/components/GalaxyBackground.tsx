@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect, useCallback } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
@@ -11,8 +11,15 @@ const mouseState = {
   ndcY: 0,
   isIdle: false,
   idleTimer: null as ReturnType<typeof setTimeout> | null,
-  idleStrength: 0, // 0 = moving, ramps to 1 when idle
+  idleStrength: 0,
+  idleDuration: 0, // how long idle in seconds
+  autoRevert: false, // triggers auto-revert after max pull
 };
+
+const IDLE_THRESHOLD = 800; // ms before pull starts
+const MAX_PULL_DURATION = 4; // seconds of full pull before auto-revert
+const REVERT_COOLDOWN = 3; // seconds to stay reverted before allowing pull again
+let revertCooldownTimer = 0;
 
 function MouseTracker() {
   const { size } = useThree();
@@ -24,10 +31,13 @@ function MouseTracker() {
       mouseState.ndcX = (e.clientX / size.width) * 2 - 1;
       mouseState.ndcY = -(e.clientY / size.height) * 2 + 1;
       mouseState.isIdle = false;
+      mouseState.idleDuration = 0;
+      mouseState.autoRevert = false;
+      revertCooldownTimer = 0;
       if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
       mouseState.idleTimer = setTimeout(() => {
         mouseState.isIdle = true;
-      }, 800);
+      }, IDLE_THRESHOLD);
     };
 
     const onTouch = (e: TouchEvent) => {
@@ -38,14 +48,19 @@ function MouseTracker() {
       mouseState.ndcX = (t.clientX / size.width) * 2 - 1;
       mouseState.ndcY = -(t.clientY / size.height) * 2 + 1;
       mouseState.isIdle = false;
+      mouseState.idleDuration = 0;
+      mouseState.autoRevert = false;
+      revertCooldownTimer = 0;
       if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
       mouseState.idleTimer = setTimeout(() => {
         mouseState.isIdle = true;
-      }, 800);
+      }, IDLE_THRESHOLD);
     };
 
     const onTouchEnd = () => {
-      mouseState.isIdle = true;
+      mouseState.isIdle = false;
+      mouseState.idleDuration = 0;
+      mouseState.autoRevert = false;
     };
 
     window.addEventListener("mousemove", onMove);
@@ -60,8 +75,28 @@ function MouseTracker() {
   }, [size]);
 
   useFrame((_, delta) => {
-    const target = mouseState.isIdle ? 1 : 0;
-    mouseState.idleStrength += (target - mouseState.idleStrength) * Math.min(delta * 2, 1);
+    // Track how long we've been idle & pulling
+    if (mouseState.isIdle && !mouseState.autoRevert) {
+      mouseState.idleDuration += delta;
+      if (mouseState.idleDuration >= MAX_PULL_DURATION) {
+        mouseState.autoRevert = true;
+        revertCooldownTimer = REVERT_COOLDOWN;
+      }
+    }
+
+    // During auto-revert cooldown, count down
+    if (mouseState.autoRevert) {
+      revertCooldownTimer -= delta;
+      if (revertCooldownTimer <= 0) {
+        mouseState.autoRevert = false;
+        mouseState.idleDuration = 0;
+      }
+    }
+
+    // Only ramp up strength if idle AND not in auto-revert
+    const shouldPull = mouseState.isIdle && !mouseState.autoRevert;
+    const target = shouldPull ? 1 : 0;
+    mouseState.idleStrength += (target - mouseState.idleStrength) * Math.min(delta * 3, 1);
   });
 
   return null;
@@ -71,7 +106,6 @@ function StarField() {
   const ref = useRef<THREE.Points>(null);
   const count = 6000;
 
-  // Store original positions for reset
   const { positions, originals } = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const orig = new Float32Array(count * 3);
@@ -95,18 +129,19 @@ function StarField() {
   const blackholePos = useMemo(() => new THREE.Vector3(), []);
   const tempVec = useMemo(() => new THREE.Vector3(), []);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (!ref.current) return;
     ref.current.rotation.y += delta * 0.02;
     ref.current.rotation.x += delta * 0.005;
 
     const strength = mouseState.idleStrength;
-    // Project mouse NDC to 3D world position at z=0
     blackholePos.set(mouseState.ndcX * 3, mouseState.ndcY * 2, 0);
 
     const geo = ref.current.geometry;
     const posAttr = geo.attributes.position;
     const arr = posAttr.array as Float32Array;
+    // Faster restore speed when auto-reverting or cursor moved
+    const restoreSpeed = mouseState.autoRevert ? 2.5 : 3.0;
 
     for (let i = 0; i < count; i++) {
       const ix = i * 3;
@@ -114,7 +149,6 @@ function StarField() {
       const iz = ix + 2;
 
       if (strength > 0.01) {
-        // Pull toward black hole
         tempVec.set(arr[ix], arr[iy], arr[iz]);
         const dir = blackholePos.clone().sub(tempVec);
         const dist = dir.length();
@@ -125,21 +159,18 @@ function StarField() {
           arr[iy] += dir.y;
           arr[iz] += dir.z;
         } else {
-          // Swirl near center
           const angle = delta * 8;
           const cx = arr[ix] - blackholePos.x;
           const cy = arr[iy] - blackholePos.y;
           arr[ix] = blackholePos.x + cx * Math.cos(angle) - cy * Math.sin(angle);
           arr[iy] = blackholePos.y + cx * Math.sin(angle) + cy * Math.cos(angle);
-          // Shrink toward center
           arr[ix] += (blackholePos.x - arr[ix]) * delta * 2;
           arr[iy] += (blackholePos.y - arr[iy]) * delta * 2;
         }
       } else {
-        // Restore to original positions
-        arr[ix] += (originals[ix] - arr[ix]) * delta * 1.5;
-        arr[iy] += (originals[iy] - arr[iy]) * delta * 1.5;
-        arr[iz] += (originals[iz] - arr[iz]) * delta * 1.5;
+        arr[ix] += (originals[ix] - arr[ix]) * delta * restoreSpeed;
+        arr[iy] += (originals[iy] - arr[iy]) * delta * restoreSpeed;
+        arr[iz] += (originals[iz] - arr[iz]) * delta * restoreSpeed;
       }
     }
     posAttr.needsUpdate = true;
@@ -197,6 +228,7 @@ function Nebula() {
     const geo = ref.current.geometry;
     const posAttr = geo.attributes.position;
     const arr = posAttr.array as Float32Array;
+    const restoreSpeed = mouseState.autoRevert ? 2.5 : 3.0;
 
     for (let i = 0; i < count; i++) {
       const ix = i * 3;
@@ -223,9 +255,9 @@ function Nebula() {
           arr[iy] += (blackholePos.y - arr[iy]) * delta * 3;
         }
       } else {
-        arr[ix] += (originals[ix] - arr[ix]) * delta * 1.5;
-        arr[iy] += (originals[iy] - arr[iy]) * delta * 1.5;
-        arr[iz] += (originals[iz] - arr[iz]) * delta * 1.5;
+        arr[ix] += (originals[ix] - arr[ix]) * delta * restoreSpeed;
+        arr[iy] += (originals[iy] - arr[iy]) * delta * restoreSpeed;
+        arr[iz] += (originals[iz] - arr[iz]) * delta * restoreSpeed;
       }
     }
     posAttr.needsUpdate = true;
