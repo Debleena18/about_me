@@ -22,14 +22,14 @@ const REVERT_COOLDOWN = 2; // seconds to stay reverted before allowing pull agai
 let revertCooldownTimer = 0;
 
 function MouseTracker() {
-  const { size } = useThree();
+  const { camera } = useThree();
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       mouseState.x = e.clientX;
       mouseState.y = e.clientY;
-      mouseState.ndcX = (e.clientX / size.width) * 2 - 1;
-      mouseState.ndcY = -(e.clientY / size.height) * 2 + 1;
+      mouseState.ndcX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseState.ndcY = -(e.clientY / window.innerHeight) * 2 + 1;
       mouseState.isIdle = false;
       mouseState.idleDuration = 0;
       mouseState.autoRevert = false;
@@ -45,8 +45,8 @@ function MouseTracker() {
       if (!t) return;
       mouseState.x = t.clientX;
       mouseState.y = t.clientY;
-      mouseState.ndcX = (t.clientX / size.width) * 2 - 1;
-      mouseState.ndcY = -(t.clientY / size.height) * 2 + 1;
+      mouseState.ndcX = (t.clientX / window.innerWidth) * 2 - 1;
+      mouseState.ndcY = -(t.clientY / window.innerHeight) * 2 + 1;
       mouseState.isIdle = false;
       mouseState.idleDuration = 0;
       mouseState.autoRevert = false;
@@ -72,7 +72,7 @@ function MouseTracker() {
       window.removeEventListener("touchend", onTouchEnd);
       if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
     };
-  }, [size]);
+  }, []);
 
   useFrame((_, delta) => {
     // Track how long we've been idle & pulling
@@ -129,13 +129,16 @@ function StarField() {
   const blackholePos = useMemo(() => new THREE.Vector3(), []);
   const tempVec = useMemo(() => new THREE.Vector3(), []);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!ref.current) return;
     ref.current.rotation.y += delta * 0.02;
     ref.current.rotation.x += delta * 0.005;
 
     const strength = mouseState.idleStrength;
-    blackholePos.set(mouseState.ndcX * 3, mouseState.ndcY * 2, 0);
+    // Unproject mouse NDC to world space, then transform into the rotated points' local space
+    const worldTarget = new THREE.Vector3(mouseState.ndcX, mouseState.ndcY, 0.5).unproject(state.camera);
+    const localTarget = ref.current.worldToLocal(worldTarget.clone());
+    blackholePos.copy(localTarget);
 
     const geo = ref.current.geometry;
     const posAttr = geo.attributes.position;
@@ -218,12 +221,14 @@ function Nebula() {
   const blackholePos = useMemo(() => new THREE.Vector3(), []);
   const tempVec = useMemo(() => new THREE.Vector3(), []);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!ref.current) return;
     ref.current.rotation.y += delta * 0.03;
 
     const strength = mouseState.idleStrength;
-    blackholePos.set(mouseState.ndcX * 3, mouseState.ndcY * 2, 0);
+    const worldTarget = new THREE.Vector3(mouseState.ndcX, mouseState.ndcY, 0.5).unproject(state.camera);
+    const localTarget = ref.current.worldToLocal(worldTarget.clone());
+    blackholePos.copy(localTarget);
 
     const geo = ref.current.geometry;
     const posAttr = geo.attributes.position;
@@ -277,35 +282,6 @@ function Nebula() {
     </Points>
   );
 }
-function VortexGlow() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const materialRef = useRef<THREE.MeshBasicMaterial>(null);
-
-  useFrame(() => {
-    if (!meshRef.current || !materialRef.current) return;
-    const strength = mouseState.idleStrength;
-    meshRef.current.position.set(mouseState.ndcX * 3, mouseState.ndcY * 2, -0.5);
-    materialRef.current.opacity = strength * 0.45;
-    meshRef.current.scale.setScalar(0.3 + strength * 1.2);
-    meshRef.current.rotation.z += 0.02;
-  });
-
-  return (
-    <mesh ref={meshRef}>
-      <ringGeometry args={[0.05, 1, 64]} />
-      <meshBasicMaterial
-        ref={materialRef}
-        color="#2dd4a8"
-        transparent
-        opacity={0}
-        blending={THREE.AdditiveBlending}
-        side={THREE.DoubleSide}
-        depthWrite={false}
-      />
-    </mesh>
-  );
-}
-
 const GalaxyBackground = () => {
   return (
     <div className="fixed inset-0 z-0">
@@ -318,7 +294,6 @@ const GalaxyBackground = () => {
         <MouseTracker />
         <StarField />
         <Nebula />
-        <VortexGlow />
       </Canvas>
     </div>
   );
