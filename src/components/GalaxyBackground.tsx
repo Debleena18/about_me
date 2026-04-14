@@ -14,11 +14,13 @@ const mouseState = {
   idleStrength: 0,
   idleDuration: 0, // how long idle in seconds
   autoRevert: false, // triggers auto-revert after max pull
+  isScrolling: false,
+  scrollTimer: null as ReturnType<typeof setTimeout> | null,
 };
 
-const IDLE_THRESHOLD = 800; // ms before pull starts
+const IDLE_THRESHOLD = 1000; // ms before pull starts
 const MAX_PULL_DURATION = 1; // seconds of full pull before auto-revert
-const REVERT_COOLDOWN = 2; // seconds to stay reverted before allowing pull again
+const REVERT_COOLDOWN = 5; // seconds to stay reverted before allowing pull again
 let revertCooldownTimer = 0;
 
 function MouseTracker() {
@@ -63,14 +65,25 @@ function MouseTracker() {
       mouseState.autoRevert = false;
     };
 
+    const onScroll = () => {
+      mouseState.isScrolling = true;
+      if (mouseState.scrollTimer) clearTimeout(mouseState.scrollTimer);
+      mouseState.scrollTimer = setTimeout(() => {
+        mouseState.isScrolling = false;
+      }, 300);
+    };
+
     window.addEventListener("mousemove", onMove);
     window.addEventListener("touchmove", onTouch, { passive: true });
     window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("touchmove", onTouch);
       window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("scroll", onScroll);
       if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
+      if (mouseState.scrollTimer) clearTimeout(mouseState.scrollTimer);
     };
   }, []);
 
@@ -93,8 +106,8 @@ function MouseTracker() {
       }
     }
 
-    // Only ramp up strength if idle AND not in auto-revert
-    const shouldPull = mouseState.isIdle && !mouseState.autoRevert;
+    // Only ramp up strength if idle AND not in auto-revert AND not scrolling
+    const shouldPull = mouseState.isIdle && !mouseState.autoRevert && !mouseState.isScrolling;
     const target = shouldPull ? 1 : 0;
     mouseState.idleStrength += (target - mouseState.idleStrength) * Math.min(delta * 3, 1);
   });
