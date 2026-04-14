@@ -17,8 +17,8 @@ const mouseState = {
 };
 
 const IDLE_THRESHOLD = 800; // ms before pull starts
-const MAX_PULL_DURATION = 4; // seconds of full pull before auto-revert
-const REVERT_COOLDOWN = 3; // seconds to stay reverted before allowing pull again
+const MAX_PULL_DURATION = 1; // seconds of full pull before auto-revert
+const REVERT_COOLDOWN = 2; // seconds to stay reverted before allowing pull again
 let revertCooldownTimer = 0;
 
 function MouseTracker() {
@@ -277,6 +277,34 @@ function Nebula() {
     </Points>
   );
 }
+function VortexGlow() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const materialRef = useRef<THREE.MeshBasicMaterial>(null);
+
+  useFrame(() => {
+    if (!meshRef.current || !materialRef.current) return;
+    const strength = mouseState.idleStrength;
+    meshRef.current.position.set(mouseState.ndcX * 3, mouseState.ndcY * 2, -0.5);
+    materialRef.current.opacity = strength * 0.45;
+    meshRef.current.scale.setScalar(0.3 + strength * 1.2);
+    meshRef.current.rotation.z += 0.02;
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <ringGeometry args={[0.05, 1, 64]} />
+      <meshBasicMaterial
+        ref={materialRef}
+        color="#2dd4a8"
+        transparent
+        opacity={0}
+        blending={THREE.AdditiveBlending}
+        side={THREE.DoubleSide}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
 
 const GalaxyBackground = () => {
   return (
@@ -290,6 +318,7 @@ const GalaxyBackground = () => {
         <MouseTracker />
         <StarField />
         <Nebula />
+        <VortexGlow />
       </Canvas>
     </div>
   );
