@@ -1,7 +1,18 @@
 import profilePhoto from "@/assets/profile-photo.png";
+import animatedAvatar from "@/assets/animated-avatar.png";
 import { Github, Linkedin, Mail, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Hero = () => {
+  // Start with the animated avatar on load, flip every 2s
+  const [showAvatar, setShowAvatar] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowAvatar((prev) => !prev);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <section
       id="hero"
@@ -86,14 +97,31 @@ const Hero = () => {
             {/* Fairy ring glow behind the photo */}
             <div className="absolute inset-0 rounded-full bg-primary/10 blur-2xl scale-110 animate-pulse-glow" />
             
-            <div className="relative w-72 h-72 md:w-80 md:h-80 rounded-full overflow-hidden border-2 border-primary/30 photo-glow-card group cursor-pointer">
-              <img
-                src={profilePhoto}
-                alt="Debleena Sarkar"
-                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
-              />
-              {/* Overlay shimmer on hover */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 via-accent/10 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative w-72 h-72 md:w-80 md:h-80 rounded-full photo-glow-card group cursor-pointer [perspective:1000px]">
+              <div
+                className={`relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] ${
+                  showAvatar ? "" : "[transform:rotateY(180deg)]"
+                }`}
+              >
+                {/* Front: animated avatar */}
+                <div className="absolute inset-0 rounded-full overflow-hidden border-2 border-primary/30 [backface-visibility:hidden]">
+                  <img
+                    src={animatedAvatar}
+                    alt="Animated coder avatar"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 via-accent/10 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </div>
+                {/* Back: real photo */}
+                <div className="absolute inset-0 rounded-full overflow-hidden border-2 border-primary/30 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                  <img
+                    src={profilePhoto}
+                    alt="Debleena Sarkar"
+                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 via-accent/10 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </div>
+              </div>
             </div>
 
             {/* Floating badges - spread around the circle */}
