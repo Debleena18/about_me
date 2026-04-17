@@ -16,8 +16,7 @@ const mouseState = {
   autoRevert: false, // triggers auto-revert after max pull
 };
 
-const IDLE_THRESHOLD = 800; // ms before pull starts
-const MAX_PULL_DURATION = 1; // seconds of full pull before auto-revert
+const MAX_PULL_DURATION = 2.5; // seconds of ramp before auto-revert
 const REVERT_COOLDOWN = 2; // seconds to stay reverted before allowing pull again
 let revertCooldownTimer = 0;
 
@@ -30,14 +29,11 @@ function MouseTracker() {
       mouseState.y = e.clientY;
       mouseState.ndcX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseState.ndcY = -(e.clientY / window.innerHeight) * 2 + 1;
-      mouseState.isIdle = false;
+      // Instantly mark as idle — pull engages immediately, then ramps with duration
+      mouseState.isIdle = true;
       mouseState.idleDuration = 0;
       mouseState.autoRevert = false;
       revertCooldownTimer = 0;
-      if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
-      mouseState.idleTimer = setTimeout(() => {
-        mouseState.isIdle = true;
-      }, IDLE_THRESHOLD);
     };
 
     const onTouch = (e: TouchEvent) => {
@@ -47,14 +43,10 @@ function MouseTracker() {
       mouseState.y = t.clientY;
       mouseState.ndcX = (t.clientX / window.innerWidth) * 2 - 1;
       mouseState.ndcY = -(t.clientY / window.innerHeight) * 2 + 1;
-      mouseState.isIdle = false;
+      mouseState.isIdle = true;
       mouseState.idleDuration = 0;
       mouseState.autoRevert = false;
       revertCooldownTimer = 0;
-      if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
-      mouseState.idleTimer = setTimeout(() => {
-        mouseState.isIdle = true;
-      }, IDLE_THRESHOLD);
     };
 
     const onTouchEnd = () => {
