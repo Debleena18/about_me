@@ -16,8 +16,7 @@ const mouseState = {
   autoRevert: false, // triggers auto-revert after max pull
 };
 
-const IDLE_THRESHOLD = 800; // ms before pull starts
-const MAX_PULL_DURATION = 1; // seconds of full pull before auto-revert
+const MAX_PULL_DURATION = 2.5; // seconds of ramp before auto-revert
 const REVERT_COOLDOWN = 2; // seconds to stay reverted before allowing pull again
 let revertCooldownTimer = 0;
 
@@ -30,14 +29,11 @@ function MouseTracker() {
       mouseState.y = e.clientY;
       mouseState.ndcX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseState.ndcY = -(e.clientY / window.innerHeight) * 2 + 1;
-      mouseState.isIdle = false;
+      // Instantly mark as idle — pull engages immediately, then ramps with duration
+      mouseState.isIdle = true;
       mouseState.idleDuration = 0;
       mouseState.autoRevert = false;
       revertCooldownTimer = 0;
-      if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
-      mouseState.idleTimer = setTimeout(() => {
-        mouseState.isIdle = true;
-      }, IDLE_THRESHOLD);
     };
 
     const onTouch = (e: TouchEvent) => {
@@ -47,14 +43,10 @@ function MouseTracker() {
       mouseState.y = t.clientY;
       mouseState.ndcX = (t.clientX / window.innerWidth) * 2 - 1;
       mouseState.ndcY = -(t.clientY / window.innerHeight) * 2 + 1;
-      mouseState.isIdle = false;
+      mouseState.isIdle = true;
       mouseState.idleDuration = 0;
       mouseState.autoRevert = false;
       revertCooldownTimer = 0;
-      if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
-      mouseState.idleTimer = setTimeout(() => {
-        mouseState.isIdle = true;
-      }, IDLE_THRESHOLD);
     };
 
     const onTouchEnd = () => {
@@ -70,12 +62,11 @@ function MouseTracker() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("touchmove", onTouch);
       window.removeEventListener("touchend", onTouchEnd);
-      if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
     };
   }, []);
 
   useFrame((_, delta) => {
-    // Track how long we've been idle & pulling
+    // Track how long cursor has been stationary on the current point
     if (mouseState.isIdle && !mouseState.autoRevert) {
       mouseState.idleDuration += delta;
       if (mouseState.idleDuration >= MAX_PULL_DURATION) {
@@ -90,13 +81,23 @@ function MouseTracker() {
       if (revertCooldownTimer <= 0) {
         mouseState.autoRevert = false;
         mouseState.idleDuration = 0;
+        mouseState.isIdle = false; // require new mouse activity to re-engage
       }
     }
 
-    // Only ramp up strength if idle AND not in auto-revert
-    const shouldPull = mouseState.isIdle && !mouseState.autoRevert;
-    const target = shouldPull ? 1 : 0;
-    mouseState.idleStrength += (target - mouseState.idleStrength) * Math.min(delta * 3, 1);
+    // Exponential ramp: strength grows quadratically with idle duration.
+    // t=0 → 0, t=MAX_PULL_DURATION → 1. Engages instantly on mouse move.
+    let target = 0;
+    if (mouseState.isIdle && !mouseState.autoRevert) {
+      const t = Math.min(mouseState.idleDuration / MAX_PULL_DURATION, 1);
+      target = t * t; // exponential-feel ramp
+    }
+    // Snap up instantly when target grows; ease down when releasing
+    if (target > mouseState.idleStrength) {
+      mouseState.idleStrength = target;
+    } else {
+      mouseState.idleStrength += (target - mouseState.idleStrength) * Math.min(delta * 4, 1);
+    }
   });
 
   return null;
@@ -161,7 +162,7 @@ function StarField() {
         const dist = dir.length();
         
         if (dist > 0.02) {
-          const pullForce = (strength * frameDelta * 2.5) / (dist * 0.5 + 0.2);
+          const pullForce = (strength * frameDelta * 6.0) / (dist * 0.5 + 0.2);
           dir.normalize().multiplyScalar(pullForce);
           arr[ix] += dir.x;
           arr[iy] += dir.y;
@@ -255,7 +256,7 @@ function Nebula() {
         const dist = dir.length();
         
         if (dist > 0.02) {
-          const pullForce = (strength * frameDelta * 3.0) / (dist * 0.4 + 0.2);
+          const pullForce = (strength * frameDelta * 7.0) / (dist * 0.4 + 0.2);
           dir.normalize().multiplyScalar(pullForce);
           arr[ix] += dir.x;
           arr[iy] += dir.y;
