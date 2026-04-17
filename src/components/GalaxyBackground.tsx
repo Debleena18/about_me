@@ -162,7 +162,7 @@ function StarField() {
         const dist = dir.length();
         
         if (dist > 0.02) {
-          const pullForce = (strength * frameDelta * 2.5) / (dist * 0.5 + 0.2);
+          const pullForce = (strength * frameDelta * 6.0) / (dist * 0.5 + 0.2);
           dir.normalize().multiplyScalar(pullForce);
           arr[ix] += dir.x;
           arr[iy] += dir.y;
