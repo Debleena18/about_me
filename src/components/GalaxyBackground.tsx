@@ -10,18 +10,40 @@ const mouseState = {
   ndcX: 0,
   ndcY: 0,
   isIdle: false,
-  idleTimer: null as ReturnType<typeof setTimeout> | null,
+  idleTimer: null as number | null,
   idleStrength: 0,
-  idleDuration: 0, // how long idle in seconds
+  idleDuration: 0, // how long idle in seconds after pull starts
   autoRevert: false, // triggers auto-revert after max pull
+  isScrolling: false,
+  scrollTimer: null as number | null,
 };
 
+const IDLE_PULL_DELAY = 1.0; // delay in seconds before blackhole pull starts
 const MAX_PULL_DURATION = 2.5; // seconds of ramp before auto-revert
-const REVERT_COOLDOWN = 2; // seconds to stay reverted before allowing pull again
+const REVERT_COOLDOWN = 2.0; // seconds to stay reverted before allowing next pull
 let revertCooldownTimer = 0;
 
 function MouseTracker() {
   const { camera } = useThree();
+
+  const resetIdle = () => {
+    mouseState.isIdle = false;
+    mouseState.idleDuration = 0;
+    mouseState.autoRevert = false;
+    if (mouseState.idleTimer) {
+      clearTimeout(mouseState.idleTimer);
+      mouseState.idleTimer = null;
+    }
+  };
+
+  const scheduleIdle = () => {
+    if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
+    mouseState.idleTimer = window.setTimeout(() => {
+      mouseState.isIdle = true;
+      mouseState.idleDuration = 0;
+      mouseState.idleTimer = null;
+    }, IDLE_PULL_DELAY * 1000);
+  };
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -29,10 +51,8 @@ function MouseTracker() {
       mouseState.y = e.clientY;
       mouseState.ndcX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseState.ndcY = -(e.clientY / window.innerHeight) * 2 + 1;
-      // Instantly mark as idle — pull engages immediately, then ramps with duration
-      mouseState.isIdle = true;
-      mouseState.idleDuration = 0;
-      mouseState.autoRevert = false;
+      resetIdle();
+      scheduleIdle();
       revertCooldownTimer = 0;
     };
 
@@ -43,25 +63,35 @@ function MouseTracker() {
       mouseState.y = t.clientY;
       mouseState.ndcX = (t.clientX / window.innerWidth) * 2 - 1;
       mouseState.ndcY = -(t.clientY / window.innerHeight) * 2 + 1;
-      mouseState.isIdle = true;
-      mouseState.idleDuration = 0;
-      mouseState.autoRevert = false;
+      resetIdle();
+      scheduleIdle();
       revertCooldownTimer = 0;
     };
 
     const onTouchEnd = () => {
-      mouseState.isIdle = false;
-      mouseState.idleDuration = 0;
-      mouseState.autoRevert = false;
+      resetIdle();
+    };
+
+    const onScroll = () => {
+      mouseState.isScrolling = true;
+      resetIdle();
+      if (mouseState.scrollTimer) clearTimeout(mouseState.scrollTimer);
+      mouseState.scrollTimer = window.setTimeout(() => {
+        mouseState.isScrolling = false;
+      }, 300);
     };
 
     window.addEventListener("mousemove", onMove);
     window.addEventListener("touchmove", onTouch, { passive: true });
     window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("touchmove", onTouch);
       window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("scroll", onScroll);
+      if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
+      if (mouseState.scrollTimer) clearTimeout(mouseState.scrollTimer);
     };
   }, []);
 
@@ -81,16 +111,20 @@ function MouseTracker() {
       if (revertCooldownTimer <= 0) {
         mouseState.autoRevert = false;
         mouseState.idleDuration = 0;
-        mouseState.isIdle = false; // require new mouse activity to re-engage
+        mouseState.isIdle = false;
+        if (!mouseState.isScrolling) {
+          scheduleIdle();
+        }
       }
     }
 
-    // Exponential ramp: strength grows quadratically with idle duration.
-    // t=0 → 0, t=MAX_PULL_DURATION → 1. Engages instantly on mouse move.
+    // Exponential ramp: strength grows slowly at first then accelerates with hold duration.
+    // t=0 → 0, t=MAX_PULL_DURATION → 1. Engages after 2 seconds of stationary cursor.
     let target = 0;
     if (mouseState.isIdle && !mouseState.autoRevert) {
       const t = Math.min(mouseState.idleDuration / MAX_PULL_DURATION, 1);
-      target = t * t; // exponential-feel ramp
+      const expo = (Math.exp(t * 4.5) - 1) / (Math.exp(4.5) - 1);
+      target = Math.min(expo, 1);
     }
     // Snap up instantly when target grows; ease down when releasing
     if (target > mouseState.idleStrength) {
@@ -162,7 +196,8 @@ function StarField() {
         const dist = dir.length();
         
         if (dist > 0.02) {
-          const pullForce = (strength * frameDelta * 6.0) / (dist * 0.5 + 0.2);
+          const effective = Math.pow(strength, 1.6) * 1.1;
+          const pullForce = (effective * frameDelta * 6.2) / (dist * 0.5 + 0.2);
           dir.normalize().multiplyScalar(pullForce);
           arr[ix] += dir.x;
           arr[iy] += dir.y;
@@ -256,7 +291,8 @@ function Nebula() {
         const dist = dir.length();
         
         if (dist > 0.02) {
-          const pullForce = (strength * frameDelta * 7.0) / (dist * 0.4 + 0.2);
+          const effective = Math.pow(strength, 1.6) * 1.2;
+          const pullForce = (effective * frameDelta * 7.2) / (dist * 0.4 + 0.2);
           dir.normalize().multiplyScalar(pullForce);
           arr[ix] += dir.x;
           arr[iy] += dir.y;
