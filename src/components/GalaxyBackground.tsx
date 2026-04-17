@@ -62,12 +62,11 @@ function MouseTracker() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("touchmove", onTouch);
       window.removeEventListener("touchend", onTouchEnd);
-      if (mouseState.idleTimer) clearTimeout(mouseState.idleTimer);
     };
   }, []);
 
   useFrame((_, delta) => {
-    // Track how long we've been idle & pulling
+    // Track how long cursor has been stationary on the current point
     if (mouseState.isIdle && !mouseState.autoRevert) {
       mouseState.idleDuration += delta;
       if (mouseState.idleDuration >= MAX_PULL_DURATION) {
@@ -82,13 +81,23 @@ function MouseTracker() {
       if (revertCooldownTimer <= 0) {
         mouseState.autoRevert = false;
         mouseState.idleDuration = 0;
+        mouseState.isIdle = false; // require new mouse activity to re-engage
       }
     }
 
-    // Only ramp up strength if idle AND not in auto-revert
-    const shouldPull = mouseState.isIdle && !mouseState.autoRevert;
-    const target = shouldPull ? 1 : 0;
-    mouseState.idleStrength += (target - mouseState.idleStrength) * Math.min(delta * 3, 1);
+    // Exponential ramp: strength grows quadratically with idle duration.
+    // t=0 → 0, t=MAX_PULL_DURATION → 1. Engages instantly on mouse move.
+    let target = 0;
+    if (mouseState.isIdle && !mouseState.autoRevert) {
+      const t = Math.min(mouseState.idleDuration / MAX_PULL_DURATION, 1);
+      target = t * t; // exponential-feel ramp
+    }
+    // Snap up instantly when target grows; ease down when releasing
+    if (target > mouseState.idleStrength) {
+      mouseState.idleStrength = target;
+    } else {
+      mouseState.idleStrength += (target - mouseState.idleStrength) * Math.min(delta * 4, 1);
+    }
   });
 
   return null;
