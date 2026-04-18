@@ -1,5 +1,5 @@
 import ScrollReveal from "./ScrollReveal";
-import { Mail, LinkedIn, GitHub, MapPin, Heart } from "lucide-react";
+import { Mail, Linkedin, Github, MapPin, Heart } from "lucide-react";
 
 const Contact = () => {
   return (
@@ -33,7 +33,7 @@ const Contact = () => {
               rel="noopener noreferrer"
               className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 group hover:scale-105 hover:-translate-y-1"
             >
-              <LinkedIn className="text-primary group-hover:scale-110 transition-transform" size={28} />
+              <Linkedin className="text-primary group-hover:scale-110 transition-transform" size={28} />
               <p className="font-body text-sm text-muted-foreground">LinkedIn</p>
             </a>
           </ScrollReveal>
@@ -45,7 +45,7 @@ const Contact = () => {
               rel="noopener noreferrer"
               className="glass-card p-6 flex flex-col items-center text-center gap-3 hover:border-primary/50 transition-all duration-300 group hover:scale-105 hover:-translate-y-1"
             >
-              <GitHub className="text-primary group-hover:scale-110 transition-transform" size={28} />
+              <Github className="text-primary group-hover:scale-110 transition-transform" size={28} />
               <p className="font-body text-sm text-muted-foreground">GitHub</p>
             </a>
           </ScrollReveal>
