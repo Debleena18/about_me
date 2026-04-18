@@ -1,11 +1,28 @@
 import profilePhoto from "@/assets/profile-photo.png";
 import animatedAvatar from "@/assets/animated-avatar.png";
-import { Github, Linkedin, Mail, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Download, GitHub, LinkedIn, Mail, Sparkles } from "lucide-react";
+import { useEffect, useState, type MouseEvent } from "react";
 
 const Hero = () => {
   // Start with the animated avatar on load, flip every 2s
   const [showAvatar, setShowAvatar] = useState(true);
+
+  const handleResumeDownload = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    const resumeUrl = "/Debleena_Sarkar_Resume.pdf";
+    const response = await fetch(resumeUrl);
+    const blob = await response.blob();
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = "Debleena_Sarkar_Resume.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(downloadUrl);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -46,10 +63,10 @@ const Hero = () => {
             <br />
             <span className="text-gradient-mint">Sarkar</span>
           </h1>
-          <p className="font-body text-xl md:text-2xl text-white mb-2">
+          <p className="font-body text-xl md:text-2xl text-white mb-2 drop-shadow-lg">
             Senior Frontend Engineer
           </p>
-          <p className="font-body text-white max-w-md mb-8 leading-relaxed">
+          <p className="font-body text-white max-w-md mb-8 leading-relaxed drop-shadow-lg">
             5.5+ years architecting high-scale enterprise React applications.
             Turning complex business requirements into elegant, performant interfaces.
           </p>
@@ -78,16 +95,24 @@ const Hero = () => {
           </div>
 
           {/* Social links */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap items-center">
             <a href="https://github.com/Debleena18" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
-              <Github size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
+              <GitHub size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
             <a href="https://www.linkedin.com/in/debleena-sarkar/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
-              <Linkedin size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
+              <LinkedIn size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
             <a href="mailto:sarkardebleena18@gmail.com" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
               <Mail size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
+            <button
+              type="button"
+              onClick={handleResumeDownload}
+              className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group"
+              aria-label="Download resume"
+            >
+              <Download size={18} />
+            </button>
           </div>
         </div>
 
