@@ -1,6 +1,6 @@
 import profilePhoto from "@/assets/profile-photo.png";
 import animatedAvatar from "@/assets/animated-avatar.png";
-import { Download, GitHub, LinkedIn, Mail, Sparkles } from "lucide-react";
+import { Download, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { useEffect, useState, type MouseEvent } from "react";
 
 const Hero = () => {
@@ -97,10 +97,10 @@ const Hero = () => {
           {/* Social links */}
           <div className="flex gap-4 flex-wrap items-center">
             <a href="https://github.com/Debleena18" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
-              <GitHub size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
+              <Github size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
             <a href="https://www.linkedin.com/in/debleena-sarkar/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
-              <LinkedIn size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
+              <Linkedin size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
             <a href="mailto:sarkardebleena18@gmail.com" className="p-3 rounded-full glass-card hover:border-primary/50 hover:scale-110 transition-all duration-300 group">
               <Mail size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
