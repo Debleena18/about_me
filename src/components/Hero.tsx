@@ -7,21 +7,17 @@ const Hero = () => {
   // Start with the animated avatar on load, flip every 2s
   const [showAvatar, setShowAvatar] = useState(true);
 
-  const handleResumeDownload = async (e: MouseEvent<HTMLButtonElement>) => {
+  const handleResumeDownload = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const resumeUrl = "/Debleena_Sarkar_Resume.pdf";
-    const response = await fetch(resumeUrl);
-    const blob = await response.blob();
-    const downloadUrl = URL.createObjectURL(blob);
+    const resumeUrl = `${import.meta.env.BASE_URL}Debleena_Sarkar_Resume.pdf`;
     const link = document.createElement("a");
 
-    link.href = downloadUrl;
+    link.href = resumeUrl;
     link.download = "Debleena_Sarkar_Resume.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(downloadUrl);
   };
 
   useEffect(() => {
