@@ -41,7 +41,7 @@ const About = () => {
               </div>
               <div>
                 <p className="font-heading text-3xl text-primary">10+</p>
-                <p className="font-body text-sm text-muted-foreground">Enterprise Projects</p>
+                <p className="font-body text-sm text-muted-foreground">Client Projects</p>
               </div>
             </div>
           </ScrollReveal>
