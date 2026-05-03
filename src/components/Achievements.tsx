@@ -44,15 +44,15 @@ const Achievements = () => {
               <ul className="space-y-3">
                 <li className="font-body text-sm text-muted-foreground flex gap-2">
                   <span className="text-primary">▸</span>
+                  Anthropic Certification- Claude 101
+                </li>
+                <li className="font-body text-sm text-muted-foreground flex gap-2">
+                  <span className="text-primary">▸</span>
                   Azure Fundamentals (AZ-900) — Microsoft
                 </li>
                 <li className="font-body text-sm text-muted-foreground flex gap-2">
                   <span className="text-primary">▸</span>
                   Frontend Web Dev with React — Coursera
-                </li>
-                <li className="font-body text-sm text-muted-foreground flex gap-2">
-                  <span className="text-primary">▸</span>
-                  React Native + Hooks — Udemy
                 </li>
               </ul>
             </div>
